@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysClientMapper">
+    
+    <resultMap type="SysClient" id="SysClientResult">
+        <result property="clientId"    column="client_id"    />
+        <result property="clitypeId"    column="clitype_id"    />
+        <result property="clientFullName"    column="client_full_name"    />
+        <result property="clientSimplifiedName"    column="client_simplified_name"    />
+        <result property="clientAddress"    column="client_address"    />
+        <association property="clitype"     column="clitype_id" javaType="SysClitype" resultMap="clitypeResult" />
+    </resultMap>
+
+    <resultMap id="clitypeResult" type="SysClitype">
+        <id     property="clitypeId"   column="clitype_id"     />
+        <result property="parentId" column="parent_id"   />
+        <result property="clitypeName" column="clitype_name"   />
+        <result property="orderNum" column="order_num"   />
+    </resultMap>
+
+    <sql id="selectSysClientVo">
+        select c.client_id, c.clitype_id, c.client_full_name, c.client_simplified_name, c.client_address,
+               ct.clitype_id, ct.parent_id, ct.clitype_name, ct.order_num
+        from sys_client c
+                 left join sys_clitype ct on c.clitype_id = ct.clitype_id
+    </sql>
+
+    <select id="selectSysClientList" parameterType="SysClient" resultMap="SysClientResult">
+        <include refid="selectSysClientVo"/>
+        <where>  
+            <if test="clientFullName != null  and clientFullName != ''"> and client_full_name like concat('%', #{clientFullName}, '%')</if>
+            <if test="clitypeId != null and clitypeId != 0">
+                AND (c.clitype_id = #{clitypeId} OR c.clitype_id IN ( SELECT t.clitype_id FROM sys_clitype t WHERE FIND_IN_SET (#{clitypeId},ancestors) ))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSysClientById" parameterType="Long" resultMap="SysClientResult">
+        <include refid="selectSysClientVo"/>
+        where client_id = #{clientId}
+    </select>
+        
+    <insert id="insertSysClient" parameterType="SysClient" useGeneratedKeys="true" keyProperty="clientId">
+        insert into sys_client
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="clitypeId != null">clitype_id,</if>
+            <if test="clientFullName != null and clientFullName != ''">client_full_name,</if>
+            <if test="clientSimplifiedName != null">client_simplified_name,</if>
+            <if test="clientAddress != null">client_address,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="clitypeId != null">#{clitypeId},</if>
+            <if test="clientFullName != null and clientFullName != ''">#{clientFullName},</if>
+            <if test="clientSimplifiedName != null">#{clientSimplifiedName},</if>
+            <if test="clientAddress != null">#{clientAddress},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysClient" parameterType="SysClient">
+        update sys_client
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="clitypeId != null">clitype_id = #{clitypeId},</if>
+            <if test="clientFullName != null and clientFullName != ''">client_full_name = #{clientFullName},</if>
+            <if test="clientSimplifiedName != null">client_simplified_name = #{clientSimplifiedName},</if>
+            <if test="clientAddress != null">client_address = #{clientAddress},</if>
+        </trim>
+        where client_id = #{clientId}
+    </update>
+
+    <delete id="deleteSysClientById" parameterType="Long">
+        delete from sys_client where client_id = #{clientId}
+    </delete>
+
+    <delete id="deleteSysClientByIds" parameterType="String">
+        delete from sys_client where client_id in 
+        <foreach item="clientId" collection="array" open="(" separator="," close=")">
+            #{clientId}
+        </foreach>
+    </delete>
+
+</mapper>

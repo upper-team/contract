@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysSupplierMapper">
+    
+    <resultMap type="SysSupplier" id="SysSupplierResult">
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="sutypeId"    column="sutype_id"    />
+        <result property="supplierFullname"    column="supplier_fullname"    />
+        <result property="supplierSimplifiedName"    column="supplier_simplified_name"    />
+        <result property="supplierAddress"    column="supplier_address"    />
+        <association property="sutype"     column="sutype_id" javaType="SysSutype" resultMap="SysSutypeResult" />
+    </resultMap>
+
+    <resultMap type="SysSutype" id="SysSutypeResult">
+        <result property="sutypeId"    column="sutype_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="sutypeName"    column="sutype_name"    />
+        <result property="orderNum"    column="order_num"    />
+    </resultMap>
+
+    <sql id="selectSysSupplierVo">
+        select s.supplier_id, s.sutype_id, s.supplier_fullname, s.supplier_simplified_name, s.supplier_address, ss.sutype_id, ss.parent_id, ss.sutype_name, ss.order_num
+        from sys_supplier s
+                left join sys_sutype ss on s.sutype_id = ss.sutype_id
+    </sql>
+
+    <select id="selectSysSupplierList" parameterType="SysSupplier" resultMap="SysSupplierResult">
+        <include refid="selectSysSupplierVo"/>
+        <where>  
+            <if test="supplierFullname != null  and supplierFullname != ''"> and supplier_fullname like concat('%', #{supplierFullname}, '%')</if>
+            <if test="supplierSimplifiedName != null  and supplierSimplifiedName != ''"> and supplier_simplified_name like concat('%', #{supplierSimplifiedName}, '%')</if>
+            <if test="supplierAddress != null  and supplierAddress != ''"> and supplier_address = #{supplierAddress}</if>
+            <if test="sutypeId != null and sutype_id != 0">
+                AND (s.sutype_id = #{sutypeId} OR s.sutype_id IN ( SELECT sss.sutype_id FROM sys_sutype sss WHERE FIND_IN_SET (#{sutypeId},ancestor) ))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSysSupplierById" parameterType="Long" resultMap="SysSupplierResult">
+        <include refid="selectSysSupplierVo"/>
+        where supplier_id = #{supplierId}
+    </select>
+        
+    <insert id="insertSysSupplier" parameterType="SysSupplier" useGeneratedKeys="true" keyProperty="supplierId">
+        insert into sys_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sutypeId != null">sutype_id,</if>
+            <if test="supplierFullname != null and supplierFullname != ''">supplier_fullname,</if>
+            <if test="supplierSimplifiedName != null and supplierSimplifiedName != ''">supplier_simplified_name,</if>
+            <if test="supplierAddress != null and supplierAddress != ''">supplier_address,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sutypeId != null">#{sutypeId},</if>
+            <if test="supplierFullname != null and supplierFullname != ''">#{supplierFullname},</if>
+            <if test="supplierSimplifiedName != null and supplierSimplifiedName != ''">#{supplierSimplifiedName},</if>
+            <if test="supplierAddress != null and supplierAddress != ''">#{supplierAddress},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysSupplier" parameterType="SysSupplier">
+        update sys_supplier
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sutypeId != null">sutype_id = #{sutypeId},</if>
+            <if test="supplierFullname != null and supplierFullname != ''">supplier_fullname = #{supplierFullname},</if>
+            <if test="supplierSimplifiedName != null and supplierSimplifiedName != ''">supplier_simplified_name = #{supplierSimplifiedName},</if>
+            <if test="supplierAddress != null and supplierAddress != ''">supplier_address = #{supplierAddress},</if>
+        </trim>
+        where supplier_id = #{supplierId}
+    </update>
+
+    <delete id="deleteSysSupplierById" parameterType="Long">
+        delete from sys_supplier where supplier_id = #{supplierId}
+    </delete>
+
+    <delete id="deleteSysSupplierByIds" parameterType="String">
+        delete from sys_supplier where supplier_id in 
+        <foreach item="supplierId" collection="array" open="(" separator="," close=")">
+            #{supplierId}
+        </foreach>
+    </delete>
+
+</mapper>

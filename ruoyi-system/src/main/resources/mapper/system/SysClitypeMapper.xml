@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysClitypeMapper">
+    
+    <resultMap type="SysClitype" id="SysClitypeResult">
+        <result property="clitypeId"    column="clitype_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="ancestors"    column="ancestors"    />
+        <result property="clitypeName"    column="clitype_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="parentName" column="parent_name" />
+    </resultMap>
+
+    <sql id="selectSysClitypeVo">
+        select clitype_id, parent_id, ancestors, clitype_name, order_num from sys_clitype
+    </sql>
+
+    <select id="selectChildrenClitypeById" parameterType="Long" resultMap="SysClitypeResult">
+        select * from sys_clitype where find_in_set(#{clitypeId}, ancestors)
+    </select>
+
+    <update id="updateClitypeChildren" parameterType="java.util.List">
+        update sys_clitype set ancestors =
+        <foreach collection="clitypes" item="item" index="index"
+                 separator=" " open="case clitype_id" close="end">
+            when #{item.clitypeId} then #{item.ancestors}
+        </foreach>
+        where clitype_id in
+        <foreach collection="clitypes" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item.clitypeId}
+        </foreach>
+    </update>
+
+    <select id="selectSysClitypeList" parameterType="SysClitype" resultMap="SysClitypeResult">
+        <include refid="selectSysClitypeVo"/>
+        <where>  
+            <if test="clitypeName != null  and clitypeName != ''"> and clitype_name like concat('%', #{clitypeName}, '%')</if>
+        </where>
+        order by parent_id
+    </select>
+    
+    <select id="selectSysClitypeById" parameterType="Long" resultMap="SysClitypeResult">
+        select t.clitype_id, t.parent_id, t.ancestors, t.clitype_name, t.order_num, p.clitype_name as parent_name
+        from sys_clitype t
+        left join sys_clitype p on p.clitype_id = t.parent_id
+        where t.clitype_id = #{clitypeId}
+    </select>
+        
+    <insert id="insertSysClitype" parameterType="SysClitype" useGeneratedKeys="true" keyProperty="clitypeId">
+        insert into sys_clitype
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="ancestors != null">ancestors,</if>
+            <if test="clitypeName != null and clitypeName != ''">clitype_name,</if>
+            <if test="orderNum != null">order_num,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+            <if test="clitypeName != null and clitypeName != ''">#{clitypeName},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysClitype" parameterType="SysClitype">
+        update sys_clitype
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+            <if test="clitypeName != null and clitypeName != ''">clitype_name = #{clitypeName},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+        </trim>
+        where clitype_id = #{clitypeId}
+    </update>
+
+    <delete id="deleteSysClitypeById" parameterType="Long">
+        delete from sys_clitype where clitype_id = #{clitypeId}
+    </delete>
+
+    <delete id="deleteSysClitypeByIds" parameterType="String">
+        delete from sys_clitype where clitype_id in 
+        <foreach item="clitypeId" collection="array" open="(" separator="," close=")">
+            #{clitypeId}
+        </foreach>
+    </delete>
+
+</mapper>

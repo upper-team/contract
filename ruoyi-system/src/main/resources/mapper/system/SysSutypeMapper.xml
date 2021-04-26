@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysSutypeMapper">
+    
+    <resultMap type="SysSutype" id="SysSutypeResult">
+        <result property="sutypeId"    column="sutype_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="ancestor"    column="ancestor"    />
+        <result property="sutypeName"    column="sutype_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="parentName" column="parent_name" />
+    </resultMap>
+
+    <sql id="selectSysSutypeVo">
+        select sutype_id, parent_id, ancestor, sutype_name, order_num from sys_sutype
+    </sql>
+
+    <select id="selectSysSutypeList" parameterType="SysSutype" resultMap="SysSutypeResult">
+        <include refid="selectSysSutypeVo"/>
+        <where>  
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="sutypeName != null  and sutypeName != ''"> and sutype_name like concat('%', #{sutypeName}, '%')</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+        </where>
+        order by parent_id
+    </select>
+    
+    <select id="selectSysSutypeById" parameterType="Long" resultMap="SysSutypeResult">
+        select t.sutype_id, t.parent_id, t.ancestor, t.sutype_name, t.order_num, p.sutype_name as parent_name
+        from sys_sutype t
+        left join sys_sutype p on p.sutype_id = t.parent_id
+        where t.sutype_id = #{sutypeId}
+    </select>
+
+    <select id="selectChildrenSutypeById" parameterType="Long" resultMap="SysSutypeResult">
+		select * from sys_sutype where find_in_set(#{sutypeId}, ancestor)
+	</select>
+
+
+    <select id="selectNormalChildrenSutypeById" parameterType="Long" resultType="int">
+		select count(*) from sys_sutype where find_in_set(#{sutypeId}, ancestor)
+	</select>
+
+        
+    <insert id="insertSysSutype" parameterType="SysSutype" useGeneratedKeys="true" keyProperty="sutypeId">
+        insert into sys_sutype
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="ancestor != null">ancestor,</if>
+            <if test="sutypeName != null">sutype_name,</if>
+            <if test="orderNum != null">order_num,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="ancestor != null">#{ancestor},</if>
+            <if test="sutypeName != null">#{sutypeName},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysSutype" parameterType="SysSutype">
+        update sys_sutype
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="ancestor != null">ancestor = #{ancestor},</if>
+            <if test="sutypeName != null">sutype_name = #{sutypeName},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+        </trim>
+        where sutype_id = #{sutypeId}
+    </update>
+
+
+    <update id="updateSutypeChildren" parameterType="java.util.List">
+        update sys_sutype set ancestor =
+        <foreach collection="depts" item="item" index="index"
+                 separator=" " open="case dept_id" close="end">
+            when #{item.deptId} then #{item.ancestors}
+        </foreach>
+        where sutype_id in
+        <foreach collection="depts" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item.deptId}
+        </foreach>
+    </update>
+
+
+    <delete id="deleteSysSutypeById" parameterType="Long">
+        delete from sys_sutype where sutype_id = #{sutypeId}
+    </delete>
+
+    <delete id="deleteSysSutypeByIds" parameterType="String">
+        delete from sys_sutype where sutype_id in 
+        <foreach item="sutypeId" collection="array" open="(" separator="," close=")">
+            #{sutypeId}
+        </foreach>
+    </delete>
+
+</mapper>

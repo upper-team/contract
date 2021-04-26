@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysCooperateContractMapper">
+    
+    <resultMap type="SysCooperateContract" id="SysCooperateContractResult">
+        <result property="contractId"    column="contract_id"    />
+        <result property="contractDeptId"    column="contract_dept_id"    />
+        <result property="contractName"    column="contract_name"    />
+        <result property="contractTarget"    column="contract_target"    />
+        <result property="manager"    column="manager"    />
+        <result property="contractAmount"    column="contract_amount"    />
+        <result property="signDate"    column="sign_date"    />
+    </resultMap>
+
+    <sql id="selectSysCooperateContractVo">
+        select contract_id, contract_dept_id, contract_name, contract_target, manager, contract_amount, sign_date from sys_cooperate_contract
+    </sql>
+
+    <select id="selectSysCooperateContractList" parameterType="SysCooperateContract" resultMap="SysCooperateContractResult">
+        <include refid="selectSysCooperateContractVo"/>
+        <where>  
+            <if test="contractName != null  and contractName != ''"> and contract_name like concat('%', #{contractName}, '%')</if>
+            <if test="contractTarget != null  and contractTarget != ''"> and contract_target = #{contractTarget}</if>
+            <if test="manager != null  and manager != ''"> and manager = #{manager}</if>
+            <if test="contractAmount != null "> and contract_amount = #{contractAmount}</if>
+            <if test="signDate != null "> and sign_date = #{signDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysCooperateContractById" parameterType="Long" resultMap="SysCooperateContractResult">
+        <include refid="selectSysCooperateContractVo"/>
+        where contract_id = #{contractId}
+    </select>
+        
+    <insert id="insertSysCooperateContract" parameterType="SysCooperateContract" useGeneratedKeys="true" keyProperty="contractId">
+        insert into sys_cooperate_contract
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractDeptId != null">contract_dept_id,</if>
+            <if test="contractName != null">contract_name,</if>
+            <if test="contractTarget != null">contract_target,</if>
+            <if test="manager != null">manager,</if>
+            <if test="contractAmount != null">contract_amount,</if>
+            <if test="signDate != null">sign_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractDeptId != null">#{contractDeptId},</if>
+            <if test="contractName != null">#{contractName},</if>
+            <if test="contractTarget != null">#{contractTarget},</if>
+            <if test="manager != null">#{manager},</if>
+            <if test="contractAmount != null">#{contractAmount},</if>
+            <if test="signDate != null">#{signDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysCooperateContract" parameterType="SysCooperateContract">
+        update sys_cooperate_contract
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="contractDeptId != null">contract_dept_id = #{contractDeptId},</if>
+            <if test="contractName != null">contract_name = #{contractName},</if>
+            <if test="contractTarget != null">contract_target = #{contractTarget},</if>
+            <if test="manager != null">manager = #{manager},</if>
+            <if test="contractAmount != null">contract_amount = #{contractAmount},</if>
+            <if test="signDate != null">sign_date = #{signDate},</if>
+        </trim>
+        where contract_id = #{contractId}
+    </update>
+
+    <delete id="deleteSysCooperateContractById" parameterType="Long">
+        delete from sys_cooperate_contract where contract_id = #{contractId}
+    </delete>
+
+    <delete id="deleteSysCooperateContractByIds" parameterType="String">
+        delete from sys_cooperate_contract where contract_id in 
+        <foreach item="contractId" collection="array" open="(" separator="," close=")">
+            #{contractId}
+        </foreach>
+    </delete>
+
+</mapper>
