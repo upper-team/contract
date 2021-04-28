@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysEmployeeMapper">
+    
+    <resultMap type="SysEmployee" id="SysEmployeeResult">
+        <result property="employeeId"    column="employee_id"    />
+        <result property="departmentId"    column="department_id"    />
+        <result property="employeeName"    column="employee_name"    />
+        <association property="department"     column="department_id"
+                     javaType="SysDepartment" resultMap="departmentResult" />
+    </resultMap>
+
+    <resultMap id="departmentResult" type="SysDepartment">
+        <id     property="departmentId"   column="department_id"     />
+        <result property="parentId" column="parent_id"   />
+        <result property="departmentName" column="department_name"   />
+    </resultMap>
+
+    <sql id="selectSysEmployeeVo">
+        select e.employee_id, e.department_id, e.employee_name,
+               de.department_id, de.parent_id, de.department_name
+        from sys_employee e
+            left join sys_department de on e.department_id = de.department_id
+    </sql>
+
+    <select id="selectSysEmployeeList" parameterType="SysEmployee" resultMap="SysEmployeeResult">
+        <include refid="selectSysEmployeeVo"/>
+        <where>  
+            <if test="employeeName != null  and employeeName != ''"> and employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="departmentId != null and departmentId != 0">
+                AND (e.department_id = #{departmentId} OR e.department_id
+                IN ( SELECT t.department_id FROM sys_department t WHERE FIND_IN_SET (#{departmentId},ancestors) ))
+            </if>
+        </where>
+        <!--  根据左边的栏进行检索 -->
+
+        <!-- 数据范围过滤 -->
+
+    </select>
+    
+    <select id="selectSysEmployeeById" parameterType="Long" resultMap="SysEmployeeResult">
+        <include refid="selectSysEmployeeVo"/>
+        where employee_id = #{employeeId}
+    </select>
+        
+    <insert id="insertSysEmployee" parameterType="SysEmployee" useGeneratedKeys="true" keyProperty="employeeId">
+        insert into sys_employee
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="departmentId != null">department_id,</if>
+            <if test="employeeName != null and employeeName != ''">employee_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="departmentId != null">#{departmentId},</if>
+            <if test="employeeName != null and employeeName != ''">#{employeeName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysEmployee" parameterType="SysEmployee">
+        update sys_employee
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="departmentId != null">department_id = #{departmentId},</if>
+            <if test="employeeName != null and employeeName != ''">employee_name = #{employeeName},</if>
+        </trim>
+        where employee_id = #{employeeId}
+    </update>
+
+    <delete id="deleteSysEmployeeById" parameterType="Long">
+        delete from sys_employee where employee_id = #{employeeId}
+    </delete>
+
+    <delete id="deleteSysEmployeeByIds" parameterType="String">
+        delete from sys_employee where employee_id in 
+        <foreach item="employeeId" collection="array" open="(" separator="," close=")">
+            #{employeeId}
+        </foreach>
+    </delete>
+
+</mapper>
