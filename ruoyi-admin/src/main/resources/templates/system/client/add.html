@@ -6,11 +6,12 @@
 <body class="white-bg">
     <div class="wrapper wrapper-content animated fadeInRight ibox-content">
         <form class="form-horizontal m" id="form-client-add">
+            <input name="clitypeId" type="hidden" id="treeId"/>
             <div class="form-group">    
                 <label class="col-sm-3 control-label">客户分类: </label>
                 <div class="col-sm-8">
                     <div class="input-group">
-                        <input name="clitypeName" onclick="selectClitypeTree()" id="treeName" type="text" placeholder="请选择分类" class="form-control">
+                        <input name="clitypeName" onclick="selectClitypeTree()" id="treeName" type="text" placeholder="请选择客户分类" class="form-control">
                         <span class="input-group-addon"><i class="fa fa-search"></i></span>
                     </div>
                 </div>
@@ -44,7 +45,6 @@
     </div>
 
     <th:block th:include="include :: footer" />
-    <th:block th:include="include :: select2-js" />
     <script th:inline="javascript">
         var prefix = ctx + "system/client"
         $("#form-client-add").validate({
@@ -56,7 +56,7 @@
             var clitypeId = $.common.isEmpty(treeId) ? "100" : $("#treeId").val();
             var url = ctx + "system/clitype/selectClitypeTree/" + clitypeId;
             var options = {
-                title: '选择分类',
+                title: '选择客户分类',
                 width: "380",
                 url: url,
                 callBack: doSubmit
@@ -77,6 +77,14 @@
                 $.operate.save(prefix + "/add", $('#form-client-add').serialize());
             }
         }
+
+        $(function() {
+            $('#post').select2({
+                placeholder: "请选择客户分类",
+                allowClear: true
+            });
+        })
+
     </script>
 </body>
 </html>

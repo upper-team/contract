@@ -2,15 +2,20 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
     <th:block th:include="include :: header('修改客户档案')" />
+    <th:block th:include="include :: select2-css" />
 </head>
 <body class="white-bg">
     <div class="wrapper wrapper-content animated fadeInRight ibox-content">
         <form class="form-horizontal m" id="form-client-edit" th:object="${sysClient}">
             <input name="clientId" th:field="*{clientId}" type="hidden">
+            <input name="clitypeId"  type="hidden"  th:field="*{clitypeId}" id="treeId"/>
             <div class="form-group">    
-                <label class="col-sm-3 control-label">分类ID：</label>
+                <label class="col-sm-3 control-label">客户分类：</label>
                 <div class="col-sm-8">
-                    <input name="clitypeId" th:field="*{clitypeId}" class="form-control" type="text">
+                    <div class="input-group">
+                        <input class="form-control" type="text" name="clitypeName" onclick="selectClitypeTree()" id="treeName"th:field="*{clitype.clitypeName}">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
                 </div>
             </div>
             <div class="form-group">    
@@ -33,7 +38,16 @@
             </div>
         </form>
     </div>
+
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+        </div>
+    </div>
+
     <th:block th:include="include :: footer" />
+    <th:block th:include="include :: select2-js" />
     <script th:inline="javascript">
         var prefix = ctx + "system/client";
         $("#form-client-edit").validate({
@@ -45,6 +59,35 @@
                 $.operate.save(prefix + "/edit", $('#form-client-edit').serialize());
             }
         }
+
+        function selectClitypeTree() {
+            var treeId = $("#treeId").val();
+            var clitypeId = $.common.isEmpty(treeId) ? "100" : $("#treeId").val();
+            var url = ctx + "system/clitype/selectClitypeTree/" + clitypeId;
+            var options = {
+                title: '选择客户分类',
+                width: "380",
+                url: url,
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmit(index, layero){
+            var tree = layero.find("iframe")[0].contentWindow.$._tree;
+            var body = layer.getChildFrame('body', index);
+            $("#treeId").val(body.find('#treeId').val());
+            $("#treeName").val(body.find('#treeName').val());
+            layer.close(index);
+        }
+
+        $(function() {
+            $('#post').select2({
+                placeholder: "请选择客户分类",
+                allowClear: true
+            });
+        })
+
     </script>
 </body>
 </html>
