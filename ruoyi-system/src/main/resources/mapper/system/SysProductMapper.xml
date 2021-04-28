@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProductMapper">
+    
+    <resultMap type="SysProduct" id="SysProductResult">
+        <result property="productId"    column="product_id"    />
+        <result property="productNum"    column="product_num"    />
+        <result property="productName"    column="product_name"    />
+        <result property="sortId"    column="sort_id"    />
+        <association property="productsort"     column="sort_id"
+                     javaType="SysProductsort" resultMap="SysProductsortResult" />
+    </resultMap>
+
+    <resultMap id="SysProductsortResult" type="SysProductsort" >
+        <result property="sortId"    column="sort_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="sortName"    column="sort_name"    />
+        <result property="orderNum"    column="order_num"    />
+    </resultMap>
+
+    <sql id="selectSysProductVo">
+        select p.product_id, p.product_name, p.sort_id,p.product_num,
+               ps.sort_id,ps.parent_id, ps.sort_name, ps.order_num
+        from sys_product p
+            left join sys_productsort ps on p.sort_id = ps.sort_id
+    </sql>
+
+    <select id="selectSysProductList" parameterType="SysProduct" resultMap="SysProductResult">
+        <include refid="selectSysProductVo"/>
+        <where>
+            <if test="productNum != null "> and product_num = #{productNum}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="sortId != null and sortId != 0">
+                AND (p.sort_id = #{sortId} OR p.sort_id
+                IN ( SELECT s.sort_id FROM sys_productsort s WHERE FIND_IN_SET (#{sortId},ancestor) ))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSysProductById" parameterType="Long" resultMap="SysProductResult">
+        <include refid="selectSysProductVo"/>
+        where product_id = #{productId}
+    </select>
+        
+    <insert id="insertSysProduct" parameterType="SysProduct" useGeneratedKeys="true" keyProperty="productId">
+        insert into sys_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productNum != null">product_num,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="sortId != null">sort_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productNum != null">#{productNum},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="sortId != null ">#{sortId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysProduct" parameterType="SysProduct">
+        update sys_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productNum != null">product_num = #{productNum},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="sortId != null">sort_id = #{sortId},</if>
+        </trim>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="deleteSysProductById" parameterType="Long">
+        delete from sys_product where product_id = #{productId}
+    </delete>
+
+    <delete id="deleteSysProductByIds" parameterType="String">
+        delete from sys_product where product_id in 
+        <foreach item="productId" collection="array" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysProductsortMapper">
+    
+    <resultMap type="SysProductsort" id="SysProductsortResult">
+        <result property="sortId"    column="sort_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="sortName"    column="sort_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="ancestor"    column="ancestor"    />
+        <result property="parentName" column="parent_name" />
+    </resultMap>
+
+    <sql id="selectSysProductsortVo">
+        select sort_id, parent_id, sort_name, order_num, ancestor from sys_productsort
+    </sql>
+
+    <select id="selectSysProductsortList" parameterType="SysProductsort" resultMap="SysProductsortResult">
+        <include refid="selectSysProductsortVo"/>
+        <where>  
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="sortName != null  and sortName != ''"> and sort_name like concat('%', #{sortName}, '%')</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+        </where>
+        order by parent_id
+    </select>
+    
+    <select id="selectSysProductsortById" parameterType="Long" resultMap="SysProductsortResult">
+        select t.sort_id, t.parent_id, t.sort_name, t.order_num, t.ancestor, p.sort_name as parent_name
+        from sys_productsort t
+        left join sys_productsort p on p.sort_id = t.parent_id
+        where t.sort_id = #{sortId}
+    </select>
+
+    <select id="selectChildrenProductsortById" parameterType="Long" resultMap="SysProductsortResult">
+        select * from sys_productsort where find_in_set(#{sortId}, ancestor)
+    </select>
+
+    <update id="updateProductsortChildren" parameterType="java.util.List">
+        update sys_productsort set ancestor =
+        <foreach collection="productsorts" item="item" index="index"
+                 separator=" " open="case sort_id" close="end">
+            when #{item.sortId} then #{item.ancestors}
+        </foreach>
+        where sort_id in
+        <foreach collection="productsorts" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item.sortId}
+        </foreach>
+    </update>
+        
+    <insert id="insertSysProductsort" parameterType="SysProductsort" useGeneratedKeys="true" keyProperty="sortId">
+        insert into sys_productsort
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="sortName != null and sortName != ''">sort_name,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="ancestor != null and ancestor != ''">ancestor,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="sortName != null and sortName != ''">#{sortName},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="ancestor != null and ancestor != ''">#{ancestor},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysProductsort" parameterType="SysProductsort">
+        update sys_productsort
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="sortName != null and sortName != ''">sort_name = #{sortName},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="ancestor != null and ancestor != ''">ancestor = #{ancestor},</if>
+        </trim>
+        where sort_id = #{sortId}
+    </update>
+
+    <delete id="deleteSysProductsortById" parameterType="Long">
+        delete from sys_productsort where sort_id = #{sortId}
+    </delete>
+
+    <delete id="deleteSysProductsortByIds" parameterType="String">
+        delete from sys_productsort where sort_id in 
+        <foreach item="sortId" collection="array" open="(" separator="," close=")">
+            #{sortId}
+        </foreach>
+    </delete>
+
+</mapper>
