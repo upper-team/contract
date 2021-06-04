@@ -2,6 +2,7 @@ package com.ruoyi.system.mapper;
 
 import java.util.List;
 import com.ruoyi.system.domain.SysClient;
+import com.ruoyi.system.domain.SysPost;
 
 /**
  * 客户档案Mapper接口
@@ -58,4 +59,6 @@ public interface SysClientMapper
      * @return 结果
      */
     public int deleteSysClientByIds(String[] clientIds);
+
+    public List<SysClient> selectSysClientAll();
 }

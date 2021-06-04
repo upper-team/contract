@@ -1,6 +1,8 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.system.domain.SysClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.SysSupplierMapper;
@@ -91,4 +93,10 @@ public class SysSupplierServiceImpl implements ISysSupplierService
     {
         return sysSupplierMapper.deleteSysSupplierById(supplierId);
     }
+
+    @Override
+    public List<SysSupplier> selectSysSupplierAll(){
+        return sysSupplierMapper.selectSysSupplierAll();
+    }
+
 }

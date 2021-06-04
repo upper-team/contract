@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import java.util.List;
 import com.ruoyi.system.domain.SysClient;
+import com.ruoyi.system.domain.SysPost;
 
 /**
  * 客户档案Service接口
@@ -58,4 +59,6 @@ public interface ISysClientService
      * @return 结果
      */
     public int deleteSysClientById(Long clientId);
+
+    public List<SysClient> selectSysClientAll();
 }

@@ -58,4 +58,6 @@ public interface SysProductMapper
      * @return 结果
      */
     public int deleteSysProductByIds(String[] productIds);
+
+    public List<SysProduct> selectSysProductAll();
 }

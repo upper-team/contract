@@ -91,4 +91,9 @@ public class SysEmployeeServiceImpl implements ISysEmployeeService
     {
         return sysEmployeeMapper.deleteSysEmployeeById(employeeId);
     }
+
+    @Override
+    public List<SysEmployee> selectSysEmployeeAll(){
+        return sysEmployeeMapper.selectSysEmployeeAll();
+    }
 }

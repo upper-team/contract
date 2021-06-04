@@ -58,4 +58,6 @@ public interface ISysEmployeeService
      * @return 结果
      */
     public int deleteSysEmployeeById(Long employeeId);
+
+    public List<SysEmployee> selectSysEmployeeAll();
 }

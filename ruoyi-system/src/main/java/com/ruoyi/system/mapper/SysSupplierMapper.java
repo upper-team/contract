@@ -1,6 +1,8 @@
 package com.ruoyi.system.mapper;
 
 import java.util.List;
+
+import com.ruoyi.system.domain.SysClient;
 import com.ruoyi.system.domain.SysSupplier;
 
 /**
@@ -58,4 +60,6 @@ public interface SysSupplierMapper
      * @return 结果
      */
     public int deleteSysSupplierByIds(String[] supplierIds);
+
+    public List<SysSupplier> selectSysSupplierAll();
 }

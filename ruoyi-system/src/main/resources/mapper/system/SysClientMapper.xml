@@ -73,6 +73,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from sys_client where client_id = #{clientId}
     </delete>
 
+    <select id="selectSysClientAll" resultMap="SysClientResult">
+        <include refid="selectSysClientVo"/>
+    </select>
+
     <delete id="deleteSysClientByIds" parameterType="String">
         delete from sys_client where client_id in 
         <foreach item="clientId" collection="array" open="(" separator="," close=")">

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysContractCooperativeMapper">
+    
+    <resultMap type="SysContractCooperative" id="SysContractCooperativeResult">
+        <result property="contractId"    column="contract_id"    />
+        <result property="contractNum"    column="contract_num"    />
+        <result property="contractName"    column="contract_name"    />
+        <result property="cooperationUnit"    column="cooperation_unit"    />
+        <result property="contractObject"    column="contract_object"    />
+        <result property="employeeName"    column="employee_name"    />
+        <result property="contractDate"    column="contract_date"    />
+        <result property="remarks"    column="remarks"    />
+        <result property="scanningCopy"    column="scanning_copy"    />
+    </resultMap>
+
+    <sql id="selectSysContractCooperativeVo">
+        select contract_id, contract_num, contract_name, cooperation_unit, contract_object, employee_name, contract_date, remarks, scanning_copy from sys_contract_cooperative
+    </sql>
+
+    <select id="selectSysContractCooperativeList" parameterType="SysContractCooperative" resultMap="SysContractCooperativeResult">
+        <include refid="selectSysContractCooperativeVo"/>
+        <where>  
+            <if test="contractName != null  and contractName != ''"> and contract_name like concat('%', #{contractName}, '%')</if>
+            <if test="cooperationUnit != null  and cooperationUnit != ''"> and cooperation_unit = #{cooperationUnit}</if>
+            <if test="employeeName != null  and employeeName != ''"> and employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="contractDate != null "> and contract_date = #{contractDate}</if>
+            <if test="idArr != null and idArr.length > 0"> and contract_id in
+                <foreach item="contractId" collection="idArr" open="(" separator="," close=")">
+                    #{contractId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSysContractCooperativeById" parameterType="Long" resultMap="SysContractCooperativeResult">
+        <include refid="selectSysContractCooperativeVo"/>
+        where contract_id = #{contractId}
+    </select>
+        
+    <insert id="insertSysContractCooperative" parameterType="SysContractCooperative">
+        insert into sys_contract_cooperative
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">contract_id,</if>
+            <if test="contractNum != null">contract_num,</if>
+            <if test="contractName != null and contractName != ''">contract_name,</if>
+            <if test="cooperationUnit != null and cooperationUnit != ''">cooperation_unit,</if>
+            <if test="contractObject != null and contractObject != ''">contract_object,</if>
+            <if test="employeeName != null and employeeName != ''">employee_name,</if>
+            <if test="contractDate != null">contract_date,</if>
+            <if test="remarks != null">remarks,</if>
+            <if test="scanningCopy != null">scanning_copy,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">#{contractId},</if>
+            <if test="contractNum != null">#{contractNum},</if>
+            <if test="contractName != null and contractName != ''">#{contractName},</if>
+            <if test="cooperationUnit != null and cooperationUnit != ''">#{cooperationUnit},</if>
+            <if test="contractObject != null and contractObject != ''">#{contractObject},</if>
+            <if test="employeeName != null and employeeName != ''">#{employeeName},</if>
+            <if test="contractDate != null">#{contractDate},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="scanningCopy != null">#{scanningCopy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysContractCooperative" parameterType="SysContractCooperative">
+        update sys_contract_cooperative
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="contractNum != null">contract_num = #{contractNum},</if>
+            <if test="contractName != null and contractName != ''">contract_name = #{contractName},</if>
+            <if test="cooperationUnit != null and cooperationUnit != ''">cooperation_unit = #{cooperationUnit},</if>
+            <if test="contractObject != null and contractObject != ''">contract_object = #{contractObject},</if>
+            <if test="employeeName != null and employeeName != ''">employee_name = #{employeeName},</if>
+            <if test="contractDate != null">contract_date = #{contractDate},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="scanningCopy != null">scanning_copy = #{scanningCopy},</if>
+        </trim>
+        where contract_id = #{contractId}
+    </update>
+
+    <delete id="deleteSysContractCooperativeById" parameterType="Long">
+        delete from sys_contract_cooperative where contract_id = #{contractId}
+    </delete>
+
+    <delete id="deleteSysContractCooperativeByIds" parameterType="String">
+        delete from sys_contract_cooperative where contract_id in 
+        <foreach item="contractId" collection="array" open="(" separator="," close=")">
+            #{contractId}
+        </foreach>
+    </delete>
+
+</mapper>

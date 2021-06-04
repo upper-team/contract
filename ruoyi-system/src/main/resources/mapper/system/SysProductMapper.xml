@@ -27,6 +27,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             left join sys_productsort ps on p.sort_id = ps.sort_id
     </sql>
 
+    <select id="selectSysProductAll" resultMap="SysProductResult">
+        <include refid="selectSysProductVo"/>
+    </select>
+
     <select id="selectSysProductList" parameterType="SysProduct" resultMap="SysProductResult">
         <include refid="selectSysProductVo"/>
         <where>

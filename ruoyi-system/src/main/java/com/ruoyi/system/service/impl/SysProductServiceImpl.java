@@ -91,4 +91,9 @@ public class SysProductServiceImpl implements ISysProductService
     {
         return sysProductMapper.deleteSysProductById(productId);
     }
+
+    @Override
+    public List<SysProduct> selectSysProductAll(){
+        return sysProductMapper.selectSysProductAll();
+    }
 }

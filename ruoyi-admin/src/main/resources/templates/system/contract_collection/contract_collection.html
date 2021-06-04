@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
-    <th:block th:include="include :: header('合作合同管理列表')" />
+    <th:block th:include="include :: header('收款合同列表')" />
 </head>
 <body class="gray-bg">
      <div class="container-div">
@@ -15,21 +15,17 @@
                                 <input type="text" name="contractName"/>
                             </li>
                             <li>
-                                <label>合同标的：</label>
-                                <input type="text" name="contractTarget"/>
+                                <label>客户名称：</label>
+                                <input type="text" name="clientName"/>
                             </li>
                             <li>
                                 <label>业务员：</label>
                                 <input type="text" name="manager"/>
                             </li>
-                            <li>
-                                <label>合同金额：</label>
-                                <input type="text" name="contractAmount"/>
-                            </li>
-                            <li>
-                                <label>签订日期：</label>
-                                <input type="text" class="time-input" placeholder="请选择签订日期" name="signDate"/>
-                            </li>
+<!--                            <li>-->
+<!--                                <label>签订日期：</label>-->
+<!--                                <input type="text" class="time-input" placeholder="请选择签订日期" name="signDate"/>-->
+<!--                            </li>-->
                             <li>
                                 <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
                                 <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
@@ -40,17 +36,20 @@
             </div>
 
             <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:cooperate_contract:add">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:contract_collection:add">
                     <i class="fa fa-plus"></i> 添加
                 </a>
-                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="system:cooperate_contract:edit">
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="system:contract_collection:edit">
                     <i class="fa fa-edit"></i> 修改
                 </a>
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:cooperate_contract:remove">
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:contract_collection:remove">
                     <i class="fa fa-remove"></i> 删除
                 </a>
-                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:cooperate_contract:export">
-                    <i class="fa fa-download"></i> 导出
+<!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:contract_collection:export">-->
+<!--                    <i class="fa fa-download"></i> 导出-->
+<!--                </a>-->
+                <a class="btn btn-warning" onclick="exportPdf()" shiro:hasPermission="system:contract_collection:downPDF">
+                    <i class="fa fa-download"></i> 下载合同文件
                 </a>
             </div>
             <div class="col-sm-12 select-table table-striped">
@@ -60,9 +59,9 @@
     </div>
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
-        var editFlag = [[${@permission.hasPermi('system:cooperate_contract:edit')}]];
-        var removeFlag = [[${@permission.hasPermi('system:cooperate_contract:remove')}]];
-        var prefix = ctx + "system/cooperate_contract";
+        var editFlag = [[${@permission.hasPermi('system:contract_collection:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('system:contract_collection:remove')}]];
+        var prefix = ctx + "system/contract_collection";
 
         $(function() {
             var options = {
@@ -71,26 +70,34 @@
                 updateUrl: prefix + "/edit/{id}",
                 removeUrl: prefix + "/remove",
                 exportUrl: prefix + "/export",
-                modalName: "合作合同管理",
+                modalName: "收款合同",
                 columns: [{
                     checkbox: true
                 },
                 {
                     field: 'contractId',
-                    title: '合同id',
+                    title: '合同ID',
                     visible: false
                 },
                 {
-                    field: 'contractDeptId',
-                    title: '合同分类id'
+                    field: 'contractNum',
+                    title: '合同编号'
                 },
                 {
                     field: 'contractName',
                     title: '合同名称'
                 },
                 {
-                    field: 'contractTarget',
+                    field: 'clientName',
+                    title: '客户名称'
+                },
+                {
+                    field: 'contractObject',
                     title: '合同标的'
+                },
+                {
+                    field: 'specificationVersion',
+                    title: '规格版本'
                 },
                 {
                     field: 'manager',
@@ -105,6 +112,23 @@
                     title: '签订日期'
                 },
                 {
+                    field: 'performanceBond',
+                    title: '履约保证金'
+                },
+                {
+                    field: 'paymentTerm',
+                    title: '付款条件'
+                },
+                {
+                    field: 'remarks',
+                    title: '备注'
+                },
+                {
+                    field: "scanningCopy",
+                    title: "文件存放路径"
+
+                },
+                {
                     title: '操作',
                     align: 'center',
                     formatter: function(value, row, index) {
@@ -117,6 +141,22 @@
             };
             $.table.init(options);
         });
+
+        function exportPdf() {
+            var url = prefix + '/downPDF';
+            var rows = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
+            var data = {"ids":rows.join()}
+            $.operate.post(url,data,function (result) {
+                if (result.code == web_status.SUCCESS) {
+                    window.location.href = ctx + "common/downloadPDF?fileName=" + encodeURI(result.msg) + "&delete=" + false;
+                } else if (result.code == web_status.WARNING) {
+                    $.modal.alertWarning(result.msg);
+                } else {
+                    $.modal.alertError(result.msg);
+                }
+                $.modal.closeLoading();
+            });
+        }
     </script>
 </body>
 </html>

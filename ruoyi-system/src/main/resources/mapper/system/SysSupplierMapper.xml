@@ -74,6 +74,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from sys_supplier where supplier_id = #{supplierId}
     </delete>
 
+    <select id="selectSysSupplierAll" resultMap="SysSupplierResult">
+        <include refid="selectSysSupplierVo"/>
+    </select>
     <delete id="deleteSysSupplierByIds" parameterType="String">
         delete from sys_supplier where supplier_id in 
         <foreach item="supplierId" collection="array" open="(" separator="," close=")">

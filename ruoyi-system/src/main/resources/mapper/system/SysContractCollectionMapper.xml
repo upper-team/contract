@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysContractCollectionMapper">
+    
+    <resultMap type="SysContractCollection" id="SysContractCollectionResult">
+        <result property="contractId"    column="contract_id"    />
+        <result property="contractNum"    column="contract_num"    />
+        <result property="contractName"    column="contract_name"    />
+        <result property="clientName"    column="client_name"    />
+        <result property="contractObject"    column="contract_object"    />
+        <result property="specificationVersion"    column="specification_version"    />
+        <result property="manager"    column="manager"    />
+        <result property="contractAmount"    column="contract_amount"    />
+        <result property="signDate"    column="sign_date"    />
+        <result property="performanceBond"    column="performance_bond"    />
+        <result property="paymentTerm"    column="payment_term"    />
+        <result property="remarks"    column="remarks"    />
+        <result property="scanningCopy"    column="scanning_copy"    />
+    </resultMap>
+
+    <sql id="selectSysContractCollectionVo">
+        select contract_id, contract_num, contract_name, client_name, contract_object, specification_version, manager, contract_amount, sign_date, performance_bond, payment_term, remarks, scanning_copy from sys_contract_collection
+    </sql>
+
+
+
+    <select id="selectSysContractCollectionList" parameterType="SysContractCollection" resultMap="SysContractCollectionResult">
+        <include refid="selectSysContractCollectionVo"/>
+        <where>  
+            <if test="contractName != null  and contractName != ''"> and contract_name like concat('%', #{contractName}, '%')</if>
+            <if test="clientName != null  and clientName != ''"> and client_name like concat('%', #{clientName}, '%')</if>
+            <if test="manager != null  and manager != ''"> and manager = #{manager}</if>
+            <if test="signDate != null "> and sign_date = #{signDate}</if>
+            <if test="idArr != null and idArr.length > 0"> and contract_id in
+                <foreach item="contractId" collection="idArr" open="(" separator="," close=")">
+                    #{contractId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSysContractCollectionById" parameterType="Long" resultMap="SysContractCollectionResult">
+        <include refid="selectSysContractCollectionVo"/>
+        where contract_id = #{contractId}
+    </select>
+        
+    <insert id="insertSysContractCollection" parameterType="SysContractCollection" useGeneratedKeys="true" keyProperty="contractId">
+        insert into sys_contract_collection
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractNum != null">contract_num,</if>
+            <if test="contractName != null">contract_name,</if>
+            <if test="clientName != null">client_name,</if>
+            <if test="contractObject != null">contract_object,</if>
+            <if test="specificationVersion != null">specification_version,</if>
+            <if test="manager != null">manager,</if>
+            <if test="contractAmount != null">contract_amount,</if>
+            <if test="signDate != null">sign_date,</if>
+            <if test="performanceBond != null">performance_bond,</if>
+            <if test="paymentTerm != null">payment_term,</if>
+            <if test="remarks != null">remarks,</if>
+            <if test="scanningCopy != null">scanning_copy,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractNum != null">#{contractNum},</if>
+            <if test="contractName != null">#{contractName},</if>
+            <if test="clientName != null">#{clientName},</if>
+            <if test="contractObject != null">#{contractObject},</if>
+            <if test="specificationVersion != null">#{specificationVersion},</if>
+            <if test="manager != null">#{manager},</if>
+            <if test="contractAmount != null">#{contractAmount},</if>
+            <if test="signDate != null">#{signDate},</if>
+            <if test="performanceBond != null">#{performanceBond},</if>
+            <if test="paymentTerm != null">#{paymentTerm},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="scanningCopy != null">#{scanningCopy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysContractCollection" parameterType="SysContractCollection">
+        update sys_contract_collection
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="contractNum != null">contract_num = #{contractNum},</if>
+            <if test="contractName != null">contract_name = #{contractName},</if>
+            <if test="clientName != null">client_name = #{clientName},</if>
+            <if test="contractObject != null">contract_object = #{contractObject},</if>
+            <if test="specificationVersion != null">specification_version = #{specificationVersion},</if>
+            <if test="manager != null">manager = #{manager},</if>
+            <if test="contractAmount != null">contract_amount = #{contractAmount},</if>
+            <if test="signDate != null">sign_date = #{signDate},</if>
+            <if test="performanceBond != null">performance_bond = #{performanceBond},</if>
+            <if test="paymentTerm != null">payment_term = #{paymentTerm},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="scanningCopy != null">scanning_copy = #{scanningCopy},</if>
+        </trim>
+        where contract_id = #{contractId}
+    </update>
+
+    <delete id="deleteSysContractCollectionById" parameterType="Long">
+        delete from sys_contract_collection where contract_id = #{contractId}
+    </delete>
+
+    <delete id="deleteSysContractCollectionByIds" parameterType="String">
+        delete from sys_contract_collection where contract_id in 
+        <foreach item="contractId" collection="array" open="(" separator="," close=")">
+            #{contractId}
+        </foreach>
+    </delete>
+
+</mapper>

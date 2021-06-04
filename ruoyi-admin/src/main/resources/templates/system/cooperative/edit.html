@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改合作合同')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <th:block th:include="include :: bootstrap-select-js" />
+
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-cooperative-edit" th:object="${sysContractCooperative}">
+            <input name="contractId" th:field="*{contractId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合同编号：</label>
+                <div class="col-sm-8">
+                    <input name="contractNum" th:field="*{contractNum}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合同名称：</label>
+                <div class="col-sm-8">
+                    <input name="contractName" th:field="*{contractName}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合作单位：</label>
+                <div class="col-sm-8">
+                    <input name="cooperationUnit" th:field="*{cooperationUnit}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合作标的：</label>
+<!--                <div class="col-sm-8">-->
+<!--                    <input name="contractObject" th:field="*{contractObject}" class="form-control" type="text" required>-->
+<!--                </div>-->
+                <div class="col-sm-8">
+                    <select name="productName" id="productName" lay-verify="required" class="form-control">
+                        <option th:each="product:${products}"
+                                th:value="${product.productName}"
+                                th:text="${product.productName}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">业务员：</label>
+<!--                <div class="col-sm-8">-->
+<!--                    <input name="employeeName" th:field="*{employeeName}" class="form-control" type="text" required>-->
+<!--                </div>-->
+                <div class="col-sm-8">
+                    <select name="employeeName" id="employeeName" lay-verify="required" class="form-control">
+                        <option th:each="employee:${employees}"
+                                th:value="${employee.employeeName}"
+                                th:text="${employee.employeeName}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">签订日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <input name="contractDate" th:value="${#dates.format(sysContractCooperative.contractDate, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input name="remarks" th:field="*{remarks}" class="form-control" type="text">
+                </div>
+            </div>
+
+<!--            <div class="form-group">-->
+<!--                <label class="col-sm-3 control-label">合同的存放路径：</label>-->
+<!--                <div class="col-sm-8">-->
+<!--                    <input name="scanningCopy" th:field="*{scanningCopy}" class="form-control" type="text">-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="form-group">-->
+<!--                <label class="col-sm-3 control-label">合同文件：</label>-->
+<!--                <div class="file-loading">-->
+<!--                    <input id="uploadF" type="file" name="file">-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="row">-->
+<!--                <div class="col-sm-12">-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="col-sm-3 control-label">上传：</label>-->
+<!--                        <div class="file-loading">-->
+<!--                            <input id="input-folder-3" type="file" name="file" multiple>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="container">-->
+<!--                <form id="uploadForm" enctype="multipart/form-data">-->
+<!--                    <div class="form-group">-->
+<!--                        <div class="file-loading">-->
+<!--                            <input id="uploadF" type="file" name="file">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-css" />
+    <th:block th:include="include :: bootstrap-fileinput-js"/>
+    <th:block th:include="include :: bootstrap-select-js" />
+
+    <script th:inline="javascript">
+        var prefix = ctx + "system/cooperative";
+        $("#form-cooperative-edit").validate({
+            focusCleanup: true
+        });
+
+        // function submitHandler() {
+        //     if ($.validate.form()) {
+        //         $.operate.save(prefix + "/edit", $('#form-cooperative-edit').serialize());
+        //     }
+        // }
+
+        //初始化fileinput
+        // initFileInput();
+        // function initFileInput() {
+            // $("#uploadF").fileinput({
+            //     language: 'zh', //设置语言
+            //     dropZoneTitle: '请选择文件',
+            //     uploadUrl: "", //上传的地址
+            //     // uploadExtraData: function(previewId, index) {   //该插件可以向您的服务器方法发送附加数据。这可以通过uploadExtraData在键值对中设置为关联数组对象来完成。所以如果你有设置uploadExtraData={id:'kv-1'}，在PHP中你可以读取这些数据$_POST['id']
+            //     //     var id = $('#id').val();
+            //     //     return {seriesId: id};
+            //     // },
+            //     allowedFileExtensions: ['pdf'],//接收的文件后缀
+            //     uploadAsync: true, //默认异步上传
+            //     showUpload: false, //是否显示上传按钮
+            //     showRemove: true, //显示移除按钮
+            //     showPreview: true, //是否显示预览
+            //     showCancel:true,   //是否显示文件上传取消按钮。默认为true。只有在AJAX上传过程中，才会启用和显示
+            //     showCaption: true,//是否显示文件标题，默认为true
+            //     browseClass: "btn btn-primary", //文件选择器/浏览按钮的CSS类。默认为btn btn-primary
+            //     dropZoneEnabled: true,//是否显示拖拽区域
+            //     // minImageWidth: 50, //图片的最小宽度
+            //     // minImageHeight: 50,//图片的最小高度
+            //     // maxImageWidth: 1000,//图片的最大宽度
+            //     // maxImageHeight: 1000,//图片的最大高度
+            //     maxFileSize: 4096,//单位为kb，如果为0表示不限制文件大小
+            //     minFileCount: 1, //每次上传允许的最少文件数。如果设置为0，则表示文件数是可选的。默认为0
+            //     maxFileCount: 0, //每次上传允许的最大文件数。如果设置为0，则表示允许的文件数是无限制的。默认为0
+            //     previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",//当检测到用于预览的不可读文件类型时，将在每个预览文件缩略图中显示的图标。默认为<i class="glyphicon glyphicon-file"></i>
+            //     layoutTemplates:{
+            //         actionUpload:'',//去除上传预览缩略图中的上传图片
+            //         // actionZoom:'',   //去除上传预览缩略图中的查看详情预览的缩略图标
+            //         actionDownload:'', //去除上传预览缩略图中的下载图标
+            //         actionDelete:'', //去除上传预览的缩略图中的删除图标
+            //     },//对象用于渲染布局的每个部分的模板配置。您可以设置以下模板来控制窗口小部件布局.eg:去除上传图标
+            //     msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",//字符串，当文件数超过设置的最大计数时显示的消息 maxFileCount。默认为：选择上传的文件数（{n}）超出了允许的最大限制{m}。请重试您的上传！
+            // })
+        //
+        // }
+
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                data = $('#form-cooperative-edit').serializeArray()
+                var productNames = $.form.selectSelects("productName");
+                var employeeNames = $.form.selectSelects("employeeName");
+                data.push({"name": "productNames", "value": productNames});
+                data.push({"name": "employeeNames", "value": employeeNames});
+                $.operate.save(prefix + "/edit", data);
+            }
+        }
+
+
+        $("input[name='contractDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $(function() {
+            $('#product').select2({
+                placeholder: "请选择合同标的",
+                allowClear: true
+            });
+        })
+
+        $(function() {
+            $('#employee').select2({
+                placeholder: "请选择业务员",
+                allowClear: true
+            });
+        })
+
+        // $(document).ready(function () {
+        //     $("#input-folder-3").fileinput({
+        //         uploadUrl: prefix + "/addFile",
+        //         uploadExtraData: function () {//向后台传递参数，需要根据id更新对应信息
+        //             var data = {
+        //                 id: $("#id").val(),
+        //             };
+        //             return data;
+        //         },
+        //         // otherActionButtons: '<button type="button" class="kv-file-down btn btn-sm btn-default" {dataKey}  onclick="downloadFile()" title="下载附件"><i class="fa fa-cloud-download"></i></button>',
+        //
+        //         uploadAsync: false,//false 同步上传，后台用数组接收，true 异步上传，每次上传一个file,会调用多次接口
+        //         showRemove: true,//显示移除按钮
+        //         showPreview: true,//是否显示预览
+        //         showCaption: true,//是否显示文字描述
+        //         maxFileCount: 10,//最大可选文件数
+        //         // removeFromPreviewOnError:true, //当选择的文件不符合规则时，例如不是指定后缀文件、大小超出配置等，选择的文件不会出现在预览框中，只会显示错误信息
+        //         // enctype: 'multipart/form-data',
+        //         // uploadExtraData: function () {//向后台传递参数
+        //         //     var data = {
+        //         //         apkName: $("#apkName").val(),
+        //         //         versionNum: $("#versionNum").val(),
+        //         //         description: $("#description").val()
+        //         //     };
+        //         //     return data;
+        //         // },
+        //         hideThumbnailContent: true // hide image, pdf, text or other content in the thumbnail preview
+        //
+        //     });
+        // });
+
+    </script>
+</body>
+</html>

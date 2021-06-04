@@ -91,4 +91,11 @@ public class SysClientServiceImpl implements ISysClientService
     {
         return sysClientMapper.deleteSysClientById(clientId);
     }
+
+    @Override
+    public List<SysClient> selectSysClientAll(){
+        return sysClientMapper.selectSysClientAll();
+    }
+
+
 }

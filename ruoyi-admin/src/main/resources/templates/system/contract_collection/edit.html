@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改收款合同')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+    <th:block th:include="include :: bootstrap-select-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-contract_collection-edit" th:object="${sysContractCollection}">
+            <input name="contractId" th:field="*{contractId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合同编号：</label>
+                <div class="col-sm-8">
+                    <input name="contractNum" th:field="*{contractNum}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合同名称：</label>
+                <div class="col-sm-8">
+                    <input name="contractName" th:field="*{contractName}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">客户名称：</label>
+                <div class="col-sm-8">
+                    <select name="clientName" id="clientName" lay-verify="required" class="form-control">
+                        <option th:field="*{clientName}" th:each="client:${clients}" th:value="${client.clientFullName}"
+                                th:text="${client.clientFullName}" required></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合同标的：</label>
+                <!--<div class="col-sm-8">
+                    <input name="contractObject" th:field="*{contractObject}" class="form-control" type="text">
+                </div>-->
+                <div class="col-sm-8">
+                    <select name="contractObject" id="contractObject" lay-verify="required" class="form-control">
+                        <option th:field="*{contractObject}" th:each="product:${products}" th:value="${product.productName}"
+                                th:text="${product.productName}" required></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">规格版本：</label>
+                <div class="col-sm-8">
+                    <input name="specificationVersion" th:field="*{specificationVersion}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">业务员：</label>
+                <!--<div class="col-sm-8">
+                    <input name="manager" th:field="*{manager}" class="form-control" type="text">
+                </div>-->
+                <div class="col-sm-8">
+                    <select name="manager" id="manager" lay-verify="required" class="form-control">
+                        <option th:field="*{manager}" th:each="employee:${employees}" th:value="${employee.employeeName}"
+                                th:text="${employee.employeeName}" required></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">合同金额：</label>
+                <div class="col-sm-8">
+                    <input name="contractAmount" th:field="*{contractAmount}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">签订日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <input name="signDate" th:value="${#dates.format(sysContractCollection.signDate, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">履约保证金：</label>
+                <div class="col-sm-8">
+                    <input name="performanceBond" th:field="*{performanceBond}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">付款条件：</label>
+                <div class="col-sm-8">
+                    <input name="paymentTerm" th:field="*{paymentTerm}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">备注：</label>
+                <div class="col-sm-8">
+                    <input name="remarks" th:field="*{remarks}" class="form-control" type="text" required>
+                </div>
+            </div>
+<!--            <div class="form-group">-->
+<!--                <label class="col-sm-3 control-label">合同的存放路径：</label>-->
+<!--                <div class="col-sm-8">-->
+<!--                    <input name="scanningCopy" th:field="*{scanningCopy}" class="form-control" type="text">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label class="col-sm-3 control-label">合同文件：</label>-->
+<!--                <div class="file-loading">-->
+<!--                    <input id="uploadF" type="file" name="file">-->
+<!--                </div>-->
+<!--            </div>-->
+
+
+
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label">文件: </label>
+                <div id="uploadDiv1" class="uploadDiv" >
+                    <input name="scanningCopy" class="form-control hide truefilePath" type="text" th:field="*{scanningCopy}">
+                    <div class="controlDiv hide">
+                        <a href="javascript:void(0);" target="_blank" class="link"></a>
+                        <a class="btn btn-xs delBtn" href="javascript:void(0)" >
+                            <i class="fa fa-remove"></i>
+                        </a>
+                    </div>
+                    <div class="inputOut">
+                        <input class="form-control fileInput" type="file" onChange="uploadFile(this)" >
+                    </div>
+                </div>
+            </div>-->
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js" />
+    <th:block th:include="include :: bootstrap-select-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "system/contract_collection";
+        $("#form-contract_collection-edit").validate({
+            focusCleanup: true
+        });
+
+
+        //初始化fileinput
+        // initFileInput();
+        // function initFileInput() {
+        //     $("#uploadF").fileinput({
+        //         language: 'zh', //设置语言
+        //         dropZoneTitle: '请选择文件',
+        //         uploadUrl: "", //上传的地址
+        //         // uploadExtraData: function(previewId, index) {   //该插件可以向您的服务器方法发送附加数据。这可以通过uploadExtraData在键值对中设置为关联数组对象来完成。所以如果你有设置uploadExtraData={id:'kv-1'}，在PHP中你可以读取这些数据$_POST['id']
+        //         //     var id = $('#id').val();
+        //         //     return {seriesId: id};
+        //         // },
+        //         allowedFileExtensions: ['pdf'],//接收的文件后缀
+        //         uploadAsync: true, //默认异步上传
+        //         showUpload: false, //是否显示上传按钮
+        //         showRemove: true, //显示移除按钮
+        //         showPreview: true, //是否显示预览
+        //         showCancel:true,   //是否显示文件上传取消按钮。默认为true。只有在AJAX上传过程中，才会启用和显示
+        //         showCaption: true,//是否显示文件标题，默认为true
+        //         browseClass: "btn btn-primary", //文件选择器/浏览按钮的CSS类。默认为btn btn-primary
+        //         dropZoneEnabled: true,//是否显示拖拽区域
+        //         // minImageWidth: 50, //图片的最小宽度
+        //         // minImageHeight: 50,//图片的最小高度
+        //         // maxImageWidth: 1000,//图片的最大宽度
+        //         // maxImageHeight: 1000,//图片的最大高度
+        //         maxFileSize: 4096,//单位为kb，如果为0表示不限制文件大小
+        //         minFileCount: 1, //每次上传允许的最少文件数。如果设置为0，则表示文件数是可选的。默认为0
+        //         maxFileCount: 0, //每次上传允许的最大文件数。如果设置为0，则表示允许的文件数是无限制的。默认为0
+        //         previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",//当检测到用于预览的不可读文件类型时，将在每个预览文件缩略图中显示的图标。默认为<i class="glyphicon glyphicon-file"></i>
+        //         layoutTemplates:{
+        //             actionUpload:'',//去除上传预览缩略图中的上传图片
+        //             // actionZoom:'',   //去除上传预览缩略图中的查看详情预览的缩略图标
+        //             actionDownload:'', //去除上传预览缩略图中的下载图标
+        //             actionDelete:'', //去除上传预览的缩略图中的删除图标
+        //         },//对象用于渲染布局的每个部分的模板配置。您可以设置以下模板来控制窗口小部件布局.eg:去除上传图标
+        //         msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",//字符串，当文件数超过设置的最大计数时显示的消息 maxFileCount。默认为：选择上传的文件数（{n}）超出了允许的最大限制{m}。请重试您的上传！
+        //     })
+        //
+        // }
+
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                //$.operate.save(prefix + "/edit", $('#form-contract_collection-edit').serialize());
+                data = $('#form-contract_collection-edit').serializeArray()
+                var clientFullNames = $.form.selectSelects("clientName");
+                var productNames = $.form.selectSelects("productName");
+                var employeeNames = $.form.selectSelects("employeeName");
+                data.push({"name": "clientFullNames", "value": clientFullNames});
+                data.push({"name": "productNames", "value": productNames});
+                data.push({"name": "employeeNames", "value": employeeNames});
+                $.operate.save(prefix + "/edit", data);
+            }
+        }
+
+        $("input[name='signDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $(function() {
+            $('#client').select2({
+                placeholder: "请选择客户",
+                allowClear: true
+            });
+        })
+    </script>
+</body>
+</html>

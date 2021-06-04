@@ -58,4 +58,6 @@ public interface SysEmployeeMapper
      * @return 结果
      */
     public int deleteSysEmployeeByIds(String[] employeeIds);
+
+    public List<SysEmployee> selectSysEmployeeAll();
 }

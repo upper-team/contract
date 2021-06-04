@@ -10,6 +10,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.config.RuoYiConfig;
 import org.apache.commons.lang3.ArrayUtils;
 import com.ruoyi.common.utils.StringUtils;
 
@@ -84,6 +86,35 @@ public class FileUtils extends org.apache.commons.io.FileUtils
      * @param filePath 文件
      * @return
      */
+//    public static boolean deleteFile(String filePath)
+//    {
+//        boolean flag = false;
+//        File file = new File(filePath);
+//        // 路径为文件且不为空则进行删除
+//        if (file.isFile() && file.exists())
+//        {
+//            file.delete();
+//            flag = true;
+//        }
+//        return flag;
+//    }
+
+    /**
+     * 根据虚拟路径删除文件
+     * @param fileName
+     */
+    public static void deleteFileByVirtualPath(String fileName) {
+        String newFileName = fileName.replace("/profile/upload", "");
+        String leftPath = RuoYiConfig.getUploadPath();
+        String realFileName = leftPath+newFileName;
+        deleteFile(realFileName);
+    }
+    /**
+     * 删除文件
+     *
+     * @param filePath 文件
+     * @return
+     */
     public static boolean deleteFile(String filePath)
     {
         boolean flag = false;
@@ -96,6 +127,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils
         }
         return flag;
     }
+
 
     /**
      * 文件名称验证

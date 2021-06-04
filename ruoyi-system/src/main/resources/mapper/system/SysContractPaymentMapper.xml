@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysContractPaymentMapper">
+    
+    <resultMap type="SysContractPayment" id="SysContractPaymentResult">
+        <result property="contractId"    column="contract_id"    />
+        <result property="contractNum"    column="contract_num"    />
+        <result property="contractName"    column="contract_name"    />
+        <result property="supplierFullname"    column="supplier_fullname"    />
+        <result property="productName"    column="product_name"    />
+        <result property="employeeName"    column="employee_name"    />
+        <result property="contractSum"    column="contract_sum"    />
+        <result property="contractDate"    column="contract_date"    />
+        <result property="remark"    column="remark"    />
+        <result property="scanningCopy"    column="scanning_copy"    />
+    </resultMap>
+
+    <sql id="selectSysContractPaymentVo">
+        select contract_id, contract_num, contract_name,supplier_fullname, product_name, employee_name, contract_sum, contract_date, remark,scanning_copy from sys_contract_payment
+    </sql>
+
+    <select id="selectSysContractPaymentList" parameterType="SysContractPayment" resultMap="SysContractPaymentResult">
+        <include refid="selectSysContractPaymentVo"/>
+        <where>
+            <if test="contractName != null  and contractName != ''"> and contract_name like concat('%', #{contractName}, '%')</if>
+            <if test="contractNum != null  and contractNum != ''"> and contract_num = #{contractNum}</if>
+            <if test="supplierFullname != null "> and supplier_fullname like concat('%', #{supplierFullname}, '%')</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="employeeName != null  and employeeName != ''"> and employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="contractSum != null  and contractSum != ''"> and contract_sum = #{contractSum}</if>
+            <if test="contractDate != null "> and contract_date = #{contractDate}</if>
+            <if test="idArr != null and idArr.length > 0"> and contract_id in
+                <foreach item="contractId" collection="idArr" open="(" separator="," close=")">
+                    #{contractId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSysContractPaymentById" parameterType="Long" resultMap="SysContractPaymentResult">
+        <include refid="selectSysContractPaymentVo"/>
+        where contract_id = #{contractId}
+    </select>
+        
+    <insert id="insertSysContractPayment" parameterType="SysContractPayment" useGeneratedKeys="true" keyProperty="contractId">
+        insert into sys_contract_payment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractName != null and contractName != ''">contract_name,</if>
+            <if test="contractNum != null and contractNum != ''">contract_num,</if>
+            <if test="supplierFullname != null">supplier_fullname,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="employeeName != null and employeeName != ''">employee_name,</if>
+            <if test="contractSum != null and contractSum != ''">contract_sum,</if>
+            <if test="contractDate != null">contract_date,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="scanningCopy != null">scanning_copy,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractName != null and contractName != ''">#{contractName},</if>
+            <if test="contractNum != null and contractNum != ''">#{contractNum},</if>
+            <if test="supplierFullname != null">#{supplierFullname},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="employeeName != null and employeeName != ''">#{employeeName},</if>
+            <if test="contractSum != null and contractSum != ''">#{contractSum},</if>
+            <if test="contractDate != null">#{contractDate},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="scanningCopy != null">#{scanningCopy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysContractPayment" parameterType="SysContractPayment">
+        update sys_contract_payment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="contractName != null and contractName != ''">contract_name = #{contractName},</if>
+            <if test="contractNum != null and contractNum != ''">contract_num = #{contractNum},</if>
+            <if test="supplierFullname != null">supplier_fullname = #{supplierFullname},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="employeeName != null and employeeName != ''">employee_name = #{employeeName},</if>
+            <if test="contractSum != null and contractSum != ''">contract_sum = #{contractSum},</if>
+            <if test="contractDate != null">contract_date = #{contractDate},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="scanningCopy != null">scanning_copy = #{scanningCopy},</if>
+        </trim>
+        where contract_id = #{contractId}
+    </update>
+
+    <delete id="deleteSysContractPaymentById" parameterType="Long">
+        delete from sys_contract_payment where contract_id = #{contractId}
+    </delete>
+
+    <delete id="deleteSysContractPaymentByIds" parameterType="String">
+        delete from sys_contract_payment where contract_id in 
+        <foreach item="contractId" collection="array" open="(" separator="," close=")">
+            #{contractId}
+        </foreach>
+    </delete>
+
+</mapper>

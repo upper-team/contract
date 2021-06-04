@@ -58,4 +58,6 @@ public interface ISysProductService
      * @return 结果
      */
     public int deleteSysProductById(Long productId);
+
+    public List<SysProduct> selectSysProductAll();
 }

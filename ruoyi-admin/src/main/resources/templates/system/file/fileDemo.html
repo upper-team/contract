@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('文件上传下载demo')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <a class="btn btn-success"  href="javascript:file()" shiro:hasPermission="system:file:upload">
+            文件上传
+        </a>
+        <a class="btn btn-warning" onclick="filedownload()" shiro:hasPermission="system:file:download">
+            文件下载
+        </a>
+    </div>
+
+    <div class="row">
+
+    </div>
+</div>
+
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "system/file";
+
+
+    function file() {
+        var url = prefix + '/file';
+        $.modal.open("文件上传", url);
+    }
+
+    function filedownload() {
+        var url = prefix + '/download';
+        $.operate.post(url,"",function (result) {
+            if (result.code == web_status.SUCCESS) {
+                window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + false;
+            } else if (result.code == web_status.WARNING) {
+                $.modal.alertWarning(result.msg)
+            } else {
+                $.modal.alertError(result.msg);
+            }
+            $.modal.closeLoading();
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -25,6 +25,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             left join sys_department de on e.department_id = de.department_id
     </sql>
 
+    <select id="selectSysEmployeeAll" resultMap="SysEmployeeResult">
+        <include refid="selectSysEmployeeVo"/>
+    </select>
+
     <select id="selectSysEmployeeList" parameterType="SysEmployee" resultMap="SysEmployeeResult">
         <include refid="selectSysEmployeeVo"/>
         <where>  

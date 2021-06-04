@@ -108,7 +108,8 @@ public class FileUploadUtils
 
         assertAllowed(file, allowedExtension);
 
-        String fileName = extractFilename(file);
+//        String fileName = extractFilename(file);
+        String fileName = file.getOriginalFilename();
 
         File desc = getAbsoluteFile(baseDir, fileName);
         file.transferTo(desc);

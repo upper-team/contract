@@ -1,6 +1,8 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
+
+import com.ruoyi.system.domain.SysClient;
 import com.ruoyi.system.domain.SysSupplier;
 
 /**
@@ -58,4 +60,6 @@ public interface ISysSupplierService
      * @return 结果
      */
     public int deleteSysSupplierById(Long supplierId);
+
+    public List<SysSupplier> selectSysSupplierAll();
 }
